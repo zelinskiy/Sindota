@@ -9,8 +9,7 @@ import Servant.Auth.Server
 import Control.Monad.Logger (runStdoutLoggingT)
 import Data.Time
 import Data.Text(Text)
-
-
+import Network.Wai.Handler.WarpTLS
 import Network.Wai.Middleware.Cors
 
 import qualified Model
@@ -57,8 +56,11 @@ showLayout = do
 -}
 
 startApp :: IO ()
-startApp = run port . myCors =<< app
+startApp = runServer . myCors =<< app
   where
+    runServer = runTLS
+      (tlsSettings "server.crt" "server.key")
+      (setPort port defaultSettings)
     myCors = cors (const $ Just policy)
     policy = CorsResourcePolicy
       { corsOrigins = Nothing

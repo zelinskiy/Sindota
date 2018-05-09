@@ -47,8 +47,6 @@ extra-deps:
 - servant-auth-server-0.3.2.0
 - cookie-0.4.3
 - haskell-src-exts-1.19.1
-- persistent-template-2.5.4
-
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

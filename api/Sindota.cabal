@@ -69,6 +69,7 @@ library
                      , wai-extra
                      , wai-cors
                      , warp
+                     , warp-tls
                      , word8
   ghc-options:       -Wall
                      -fno-warn-unused-do-bind
