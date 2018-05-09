@@ -10,6 +10,10 @@ import qualified Api.User
 import qualified Api.AuthJWT
 import qualified Api.Auth
 import qualified Api.Admin
+import qualified Api.Tournament
+import qualified Api.Game
+import qualified Api.Question
+import qualified Api.Announce
 
 import Model
 import Utils
@@ -26,6 +30,10 @@ type PublicApi =
 type PrivateApi =
        "user"       :> Api.User.API
   :<|> "admin"      :> Api.Admin.API
+  :<|> "tournament" :> Api.Tournament.API
+  :<|> "game"       :> Api.Game.API
+  :<|> "question"   :> Api.Question.API
+  :<|> "announce"   :> Api.Announce.API
   
 server :: ConnectionPool
        -> CookieSettings
@@ -51,4 +59,8 @@ privateServer p (Authenticated u) =
   enter (privateToPublicH u `ver` publicToNormalH p) $
        Api.User.server
   :<|> Api.Admin.server
+  :<|> Api.Tournament.server
+  :<|> Api.Game.server
+  :<|> Api.Question.server
+  :<|> Api.Announce.server
 privateServer _ _ = throwAll err401
