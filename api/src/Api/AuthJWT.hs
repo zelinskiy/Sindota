@@ -37,15 +37,16 @@ publicServer :: CookieSettings
              -> JWTSettings
              -> PublicServer PublicAPI
 publicServer cs jwts (Login e p) = do
-  mUsr <- db2 $
-    selectFirst [ UserEmail    ==. e
-                , UserPassword ==. hash p ] []
+  mUsr <- db2 $ selectFirst [UserEmail ==. e] []
   mApplyCookies <- case mUsr of
      Nothing ->
        throwError $ err401
        { errBody = "Can't find user" }
      Just usr ->
-       liftIO $ acceptLogin cs jwts usr
+       if userPassword (entityVal usr) == hash p
+       then liftIO $ acceptLogin cs jwts usr
+       else throwError $ err401
+            { errBody = "Incorrect password" }
   Right jwt <- case mUsr of
     Nothing -> return $ Right ""
     Just u -> liftIO $ makeJWT u jwts Nothing

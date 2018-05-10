@@ -33,6 +33,7 @@ SecretKey json
     purpose SecretKeyPurpose
     deriving Eq Show
 Tournament json
+    title String
     author UserId
     at UTCTime
     status TournamentStatus

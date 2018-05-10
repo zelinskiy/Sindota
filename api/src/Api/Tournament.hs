@@ -1,15 +1,20 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Api.Tournament (API, server) where
 
---import Control.Monad.Trans.Reader
+import Control.Monad.Trans.Reader
+import Data.Maybe
+
 import Database.Persist.Sqlite
 import Servant
 
 import Model
+import JsonModel
 import Utils
 
 type API =
         "all"
-      :> Get '[JSON] [Entity Tournament]
+      :> Get '[JSON] [FullTournament]
     :<|> "new"
       :> ReqBody '[JSON] Tournament
       :> Post '[JSON] (Key Tournament)
@@ -30,14 +35,13 @@ type API =
       :> Capture "id" (Key Tournament)
       :> Post '[JSON] ()
     :<|> "my"
-        :>("registered" :> Get '[JSON] [Entity Tournament]
-      :<|> "created"    :> Get '[JSON] [Entity Tournament]
-      :<|> "selected"   :> Get '[JSON] (Entity Tournament))
+        :>("registered" :> Get '[JSON] [FullTournament]
+      :<|> "created"    :> Get '[JSON] [FullTournament]
+      :<|> "selected"   :> Get '[JSON] (Maybe FullTournament))
     :<|> "promote"
       :> Capture "key" String
       :> Post '[JSON] ()
-    
-    
+
 server :: PrivateServer API
 server = allTournaments
     :<|> newTournament
@@ -49,14 +53,67 @@ server = allTournaments
     :<|> (myRegistered :<|> myCreated :<|> mySelected)
     :<|> promoteTournament    
   where    
-    allTournaments = db $ selectList [] []
-    newTournament = db . insert
+    allTournaments = db (selectList [] [Desc TournamentAt])
+                     >>= sequence . map fulfillTournament
+    newTournament t = do
+      me <- entityKey <$> ask
+      let t' = t { tournamentAuthor = me
+                 , tournamentStatus = Default }
+      db $ insert t'
     deleteTournament = db . delete
-    updateTournament tid = db . replace tid
-    register = undefined
-    unregister = undefined
-    selectTournament = undefined
-    myRegistered = undefined
-    myCreated = undefined
-    mySelected = undefined
+    updateTournament tid t = do
+      me <- entityKey <$> ask
+      mbTournament <- db $ selectFirst [TournamentId ==. tid] []
+      case mbTournament of
+        Nothing -> throwError $ err403
+          { errBody = "Tournament not Found" }
+        Just t' -> 
+          if tournamentAuthor (entityVal t') /= me
+          then throwError $ err403
+               { errBody = "Only author allowed to edit" }
+          else db $ replace tid t
+    register tid = do
+      me <- entityKey <$> ask
+      db $ insert $ TournamentRegistration me tid
+      return ()
+    unregister tid = do
+      me <- entityKey <$> ask
+      db $ delete $ TournamentRegistrationKey me tid
+      return ()
+    selectTournament tid = do
+      me <- entityKey <$> ask
+      db $ insert $ TournamentSelection me tid
+      return ()
+    myRegistered = do
+      me <- entityKey <$> ask
+      myRegs <- db $ map (tournamentRegistrationTournament . entityVal)
+                <$> selectList [TournamentRegistrationUser ==. me] []
+      db (selectList [TournamentId <-. myRegs] [Desc TournamentAt])
+        >>= sequence . map fulfillTournament
+    myCreated = do
+      me <- entityKey <$> ask
+      db (selectList [TournamentAuthor ==. me] [Desc TournamentAt])
+        >>= sequence . map fulfillTournament
+    mySelected = do
+      me <- entityKey <$> ask
+      mySelection <- db $ fmap (tournamentSelectionTournament . entityVal)
+                <$> selectFirst [TournamentSelectionUser ==. me] []
+      case mySelection of
+        Just tid -> db (selectFirst [TournamentId ==. tid] [Desc TournamentAt])
+          >>= \case
+            Just t -> Just <$> fulfillTournament t
+            Nothing -> return Nothing
+        Nothing -> return Nothing
     promoteTournament = undefined
+
+    fulfillTournament t = do
+      let tid = entityKey t
+          tv = entityVal t
+      g <- db $ fromJust <$> selectFirst [GameId ==. tournamentGame tv] []
+      a <- db $ fromJust <$> selectFirst [UserId ==. tournamentAuthor tv] []
+      cnt <- db $ count [TournamentRegistrationTournament ==. tid]
+      return $ FullTournament 
+        { tournament = t
+        , game = g
+        , author = a
+        , registeredCount = cnt }
