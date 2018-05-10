@@ -4,7 +4,7 @@ module JsonModel where
 
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
-import Database.Persist
+
 import Model
 
 data Login = Login
@@ -26,9 +26,9 @@ instance FromJSON RegisterData
 
 data FullTournament
   = FullTournament
-    { tournament :: Entity Tournament
-    , game :: Entity Game
-    , author :: Entity User
+    { tournament :: Tournament
+    , game :: Game
+    , author :: User
     , registeredCount :: Int
     } deriving (Eq, Show, Generic)
 

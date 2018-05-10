@@ -13,7 +13,13 @@ class All extends Component {
 	Utils.get({route: this.props.url
 		   , success: (data) => {
 		       console.log("Loaded tournaments");
-		       this.setState({tournaments: data});
+		       this.setState({tournaments: data.map(t => {
+			   var _t = Object.assign({}, t.tournament);
+			   _t.game = Object.assign({}, t.game);
+			   _t.author = Object.assign({}, t.author);
+			   t = _t;
+			   return t;
+		       })});
 		   }
 		   , error: (e) => {
 		       console.error(e);
@@ -25,6 +31,9 @@ class All extends Component {
 	return(<div key={t.id}>
 	       <h4>{t.title}</h4>
 	       <p>At: {t.at}</p>
+	       <p>Author: {t.author.email}</p>
+	       <p>Game:
+	         <abbr title={t.game.description}>{t.game.name}</abbr></p>
 	       <p>Status: {t.status}</p>
 	       <p>Reward: {t.reward}</p>
 	       <p>{t.description}</p>

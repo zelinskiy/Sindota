@@ -53,7 +53,7 @@ server = allTournaments
     :<|> (myRegistered :<|> myCreated :<|> mySelected)
     :<|> promoteTournament    
   where    
-    allTournaments = db (selectList [] [Desc TournamentAt])
+    allTournaments = db (selectList [] [Asc TournamentAt])
                      >>= sequence . map fulfillTournament
     newTournament t = do
       me <- entityKey <$> ask
@@ -88,18 +88,18 @@ server = allTournaments
       me <- entityKey <$> ask
       myRegs <- db $ map (tournamentRegistrationTournament . entityVal)
                 <$> selectList [TournamentRegistrationUser ==. me] []
-      db (selectList [TournamentId <-. myRegs] [Desc TournamentAt])
+      db (selectList [TournamentId <-. myRegs] [Asc TournamentAt])
         >>= sequence . map fulfillTournament
     myCreated = do
       me <- entityKey <$> ask
-      db (selectList [TournamentAuthor ==. me] [Desc TournamentAt])
+      db (selectList [TournamentAuthor ==. me] [Asc TournamentAt])
         >>= sequence . map fulfillTournament
     mySelected = do
       me <- entityKey <$> ask
       mySelection <- db $ fmap (tournamentSelectionTournament . entityVal)
                 <$> selectFirst [TournamentSelectionUser ==. me] []
       case mySelection of
-        Just tid -> db (selectFirst [TournamentId ==. tid] [Desc TournamentAt])
+        Just tid -> db (selectFirst [TournamentId ==. tid] [Asc TournamentAt])
           >>= \case
             Just t -> Just <$> fulfillTournament t
             Nothing -> return Nothing
@@ -109,11 +109,13 @@ server = allTournaments
     fulfillTournament t = do
       let tid = entityKey t
           tv = entityVal t
-      g <- db $ fromJust <$> selectFirst [GameId ==. tournamentGame tv] []
-      a <- db $ fromJust <$> selectFirst [UserId ==. tournamentAuthor tv] []
+      g <- db $ fromMaybe (error "CANT FIND GAME")
+        <$> get (tournamentGame tv)
+      a <- db $ fromMaybe (error "CANT FIND AUTHOR")
+        <$> get (tournamentAuthor tv)
       cnt <- db $ count [TournamentRegistrationTournament ==. tid]
       return $ FullTournament 
-        { tournament = t
+        { tournament = tv
         , game = g
         , author = a
         , registeredCount = cnt }
