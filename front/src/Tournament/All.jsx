@@ -59,7 +59,8 @@ class All extends Component {
     
     render() {
 	return (
-	    <div>
+	    <div style={{margin:"30px"}}>
+	      <h4>{strings.Tournaments}</h4>
 	      <button onClick={()=>window.location.href="/tournament/create"}>{strings.New}</button>
 	      <button onClick={this.loadTournaments("/private/tournament/all")}>{strings.All}</button>
 	      <button onClick={this.loadTournaments("/private/tournament/my/registered")}>{strings.Registered}</button>

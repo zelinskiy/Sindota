@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Utils from '../utils';
 import Game from './Game';
+import strings from '../localization';
 
 class Create extends Component {
 

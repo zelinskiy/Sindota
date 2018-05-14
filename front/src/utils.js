@@ -43,6 +43,10 @@ class Utils {
 	}
 	return r;
     }
+
+    static formatTime(s){
+	return new Date(s).toLocaleString("ru");
+    }
 }
 
 export default Utils;

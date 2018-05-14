@@ -15,6 +15,9 @@ type API =
     :<|> "new"
       :> ReqBody '[JSON] Announce
       :> Post '[JSON] (Key Announce)
+    :<|> "get"
+      :> Capture "id" (Key Announce)
+      :> Get '[JSON] (Maybe (Entity Announce))
     :<|> "delete"
       :> Capture "id" (Key Announce)
       :> Delete '[JSON] ()
@@ -26,6 +29,7 @@ type API =
 server :: PrivateServer API
 server = myAnnounces
     :<|> newAnnounce
+    :<|> getAnnounce
     :<|> deleteAnnounce
     :<|> updateAnnounce
   where    
@@ -50,7 +54,8 @@ server = myAnnounces
         Just t -> if tournamentAuthor (entityVal t) /= entityKey me
           then throwError $ err403
                { errBody = "You are not an admin of this tournament" }
-          else db $ insert a'      
+          else db $ insert a'
+    getAnnounce aid = db $ selectFirst [AnnounceId ==. aid] []
     deleteAnnounce aid = do
       me <- ask
       mbAnnounce <- db $ selectFirst

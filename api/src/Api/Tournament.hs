@@ -40,10 +40,12 @@ type API =
     :<|> "select"
       :> Capture "id" (Key Tournament)
       :> Post '[JSON] ()
+    :<|> "unselect"
+      :> Post '[JSON] ()
     :<|> "my"
         :>("registered" :> Get '[JSON] [Entity Tournament]
       :<|> "created"    :> Get '[JSON] [Entity Tournament]
-      :<|> "selected"   :> Get '[JSON] [Entity Tournament])
+      :<|> "selected"   :> Get '[JSON] (Maybe (Entity Tournament)))
     :<|> "promote"
       :> Capture "id" (Key Tournament)
       :> Capture "key" String
@@ -59,6 +61,7 @@ server = allTournaments
     :<|> unregister
     :<|> isRegistered
     :<|> selectTournament
+    :<|> unselectTournament
     :<|> (myRegistered :<|> myCreated :<|> mySelected)
     :<|> promoteTournament    
   where    
@@ -96,8 +99,13 @@ server = allTournaments
         , TournamentRegistrationTournament ==. tid] []
     selectTournament tid = do
       me <- entityKey <$> ask
+      unselectTournament
       db $ insert $ TournamentSelection me tid
       return ()
+    unselectTournament = do
+      me <- entityKey <$> ask
+      db $ deleteWhere
+        [TournamentSelectionUser ==. me]
     myRegistered = do
       me <- entityKey <$> ask
       myRegs <- db $ map (tournamentRegistrationTournament . entityVal)
@@ -113,9 +121,9 @@ server = allTournaments
       case mySelection of
         Just tid -> db (selectFirst [TournamentId ==. tid] [Asc TournamentAt])
           >>= \case
-            Just t -> return [t]
-            Nothing -> return []
-        Nothing -> return []
+            Just t -> return $ Just t
+            Nothing -> return Nothing
+        Nothing -> return Nothing
     promoteTournament tid k = do
       mbKey <- db $ selectFirst
         [ SecretKeyValue ==. k

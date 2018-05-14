@@ -3,8 +3,6 @@ import {Switch, Route, Link, Redirect} from 'react-router-dom';
 import Cookies from 'js-cookie';
 import {setLanguage, getLanguage} from 'react-localization';
 
-import './App.css';
-
 import strings from './localization';
 import AuthForm from './AuthForm.jsx';
 import Dashboard from './Dashboard.jsx';
@@ -64,7 +62,6 @@ const Header = () => (
       <nav>
         <Link to='/'>{strings.Home}</Link> &nbsp;
 	<Link to='/tournament/all'>{strings.Tournaments}</Link> &nbsp;	
-	<Link to='/games/all'>{strings.Games}</Link> &nbsp;
 	<Link to='/feed'>{strings.Feed}</Link> &nbsp;
         <Link to='/auth'>{strings.Auth}</Link> &nbsp;
 	<select id="langSelect"

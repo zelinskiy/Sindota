@@ -11,6 +11,7 @@ let strings = new LocalizedStrings({
 	Auth:"Auth",
 	
 	New: "New",
+	Create: "Create",
 	Login: "Login",
 	Logout: "Logout",
 	Password: "Password",
@@ -28,7 +29,19 @@ let strings = new LocalizedStrings({
 	All: "all",
 	Registered: "Registered",
 	Created: "Created",
-	Dashboard: "Dashboard"
+	Dashboard: "Dashboard",
+
+	Promote: "Promote",
+	Delete: "Delete",
+	Edit: "Edit",
+	Select: "Select",
+	Unselect: "Unselect",
+	Unregister: "Unregister",
+	Announce: "Announce",
+	Author: "Author",
+	Text: "Text",
+	SelectedTournament: "Selected tournament",
+	NotSelectedTournament: "No tournament selected"
 	
     },
     ru: {
@@ -39,7 +52,8 @@ let strings = new LocalizedStrings({
 	Feed:"Лента",
 	Auth:"Авторизация",
 
-	New: "Новый",
+	New: "Создать",
+	Create: "Создать",
 	Login: "Войти в аккаунт",
 	Logout: "Выйти из аккаунта",
 	Password: "Пароль",
@@ -55,9 +69,21 @@ let strings = new LocalizedStrings({
 	Reward: "Награда",
 
 	All: "Все",
-	Registered: "Зарегестрированные",
+	Registered: "Зарегистрированные",
 	Created: "Созданные",
-	Dashboard: "Панель"
+	Dashboard: "Панель",
+
+	Promote: "Поднять",
+	Delete: "Удалить",
+	Edit: "Изменить",
+	Select: "Выбрать",
+	Unselect: "Снять выбор",
+	Unregister: "Отменить регистрацию",
+	Announce: "Объявление",
+	Author: "Автор",
+	Text: "Текст",
+	SelectedTournament: "Выбран турнир",
+	NotSelectedTournament: "Нет выбранного турнира"
     },
     uk: {
 	lang:"Мова",
@@ -67,7 +93,8 @@ let strings = new LocalizedStrings({
 	Feed:"Лента",
 	Auth:"Авторизацiя",
 
-	New: "Новий",
+	New: "Додати",
+	Create: "Створити",
 	Login: "Увійти",
 	Logout: "Вихід із системи",
 	Password: "Пароль",
@@ -85,7 +112,19 @@ let strings = new LocalizedStrings({
 	All: "Усі",
 	Registered: "Зареєстровано",
 	Created: "Створено",
-	Dashboard: "Панель"
+	Dashboard: "Панель",
+
+	Promote: "Пiдняти",
+	Delete: "Видалити",
+	Edit: "Змiнити",
+	Select: "Вибрати",
+	Unselect: "Зняти вибiр",
+	Unregister: "Скасувати реєстрацiю",
+	Announce: "Оголошення",
+	Author: "Автор",
+	Text: "Текст",
+	SelectedTournament: "Обраний турнiр",
+	NotSelectedTournament: "Немає обраного турнiру"
     }
 });
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Utils from '../utils';
 import Tournament from './Tournament';
-//import Game from '../Game/Game';
+import strings from '../localization';
 
 class Create extends Component {
 
@@ -100,33 +100,33 @@ class Create extends Component {
     render() {
 	return (
 	    <div>
-              Title:
+              {strings.Title}:
               <input type="text"
 		     value={this.state.title}
 		     onChange={e=>this.setState({title:e.target.value})}/>
 		<br/>
 		
-		At:
+		{strings.At}:
 		<input type="datetime-local"
 		       value={this.state.at}
 		       onChange={e=>this.setState({at:e.target.value})} />
 		  <br/>
 		  
-		  Game:
+		  {strings.Game}:
 		  <select value={this.state.game} onChange={e=>this.setState({game:e.target.value})}>
 		    {this.state._games.map(g => <option value={g.id} key={g.id}>{g.name}</option>)}
 	    </select>
-		&nbsp;<a href="/game/new">new</a>
+		&nbsp;<a href="/game/new">{strings.New}</a>
 		<br/>
 		
-	    Reward:
+	    {strings.Reward}:
 		<input type="number"
 	    value={this.state.reward}
 	    min="0"
 	    onChange={e=>this.setState({reward:e.target.value})} />
 		<br/>
 		
-	    Description: <br/>
+	    {strings.Description}: <br/>
 		<textarea rows="5" cols="30"
 	    value={this.state.description}
 	    onChange={e=>this.setState({description:e.target.value})}>
@@ -137,11 +137,11 @@ class Create extends Component {
 	     <input type="button"
 	    className="btn"
 	    onClick={this.handleEdit}
-	    value="Edit" />
+	     value={strings.Edit} />
 	     :<input type="button"
 	    className="btn"
 	    onClick={this.handleCreate}
-	     value="Create" />}
+	     value={strings.Create} />}
 
 	    
 		
