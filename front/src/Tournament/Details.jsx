@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Cookies from 'js-cookie';
 
 import Utils from '../utils';
 import Tournament from './Tournament';
@@ -132,6 +133,7 @@ class Details extends Component{
 			    :<span>
 			      &nbsp;<button onClick={this.register}>register</button>
 			</span>}
+			{this.state.author === JSON.parse(Cookies.get("me")).email && <span>&nbsp;<button onClick={() => window.location.href="/announce/create/"+this.state.id}>announce</button></span>}
 
 	      </p>
 	      <p>Status: {this.state.status}</p>

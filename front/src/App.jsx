@@ -12,6 +12,8 @@ import CreateTournament from './Tournament/Create.jsx';
 import AllTournaments from './Tournament/All.jsx';
 import DetailsTournament from './Tournament/Details.jsx';
 import CreateGame from './Game/Create.jsx';
+import CreateAnnounce from './Announce/Create.jsx';
+import Feed from './Feed.jsx';
 
 class App extends Component {
     constructor(props) {
@@ -50,6 +52,8 @@ const Main = () => (
 	<PrivateRoute path='/tournament/edit/:id' component={CreateTournament}/>
 	<PrivateRoute path='/tournament/details/:id' component={DetailsTournament}/>
 	<PrivateRoute path='/game/new' component={CreateGame}/>
+	<PrivateRoute path='/announce/:mode(create|edit)/:id' component={CreateAnnounce}/>
+	<PrivateRoute path='/feed' component={Feed}/>
 	
     </Switch>
   </main>
@@ -61,7 +65,7 @@ const Header = () => (
         <Link to='/'>{strings.Home}</Link> &nbsp;
 	<Link to='/tournament/all'>{strings.Tournaments}</Link> &nbsp;	
 	<Link to='/games/all'>{strings.Games}</Link> &nbsp;
-	<Link to='/question/all'>{strings.Feed}</Link> &nbsp;
+	<Link to='/feed'>{strings.Feed}</Link> &nbsp;
         <Link to='/auth'>{strings.Auth}</Link> &nbsp;
 	<select id="langSelect"
 		onClick={(e)=>{
