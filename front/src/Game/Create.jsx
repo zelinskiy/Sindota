@@ -37,9 +37,10 @@ class Create extends Component {
 		<br/>
 		
 		<input type="button"
+		       className="btn"
 		       onClick={this.handleCreate}
 		       value="Create" />
-		
+				
 		<p style={{color: "red"}}>{this.state._error}</p>
 	    </div>
 	);

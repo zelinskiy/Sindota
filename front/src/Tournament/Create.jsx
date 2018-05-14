@@ -6,22 +6,30 @@ import Tournament from './Tournament';
 
 class Create extends Component {
 
+    state = {}
+    
     constructor(props){
 	super(props);
 	this.state = new Tournament();
-	this.state.title = "Tournament " + Math.floor(Math.random()*100000);
-	this.state.reward = 1000*Math.floor(Math.random()*100);
-	this.state._games = [];
-	this.state._error = "";
-
+	this.state._games = [];	
+	if(this.props.match.params.id){
+	    console.log(this.props.match.params.id);
+	    this.state.id = this.props.match.params.id;
+	    this.loadTournament();
+	}
+	else {
+	    this.state.title = "Tournament " + Math.floor(Math.random()*100000);
+	    this.state.reward = 1000*Math.floor(Math.random()*100);    
+	}
 	this.loadGames();
-	
+	this.state._error = "";	
     }
     
     handleCreate = (_) => {
 	var data = Object.assign({}, this.state);
 	data.at += "Z";
 	data.game = parseInt(data.game, 10);
+	data.reward = parseInt(data.reward, 10);
 	console.log(data);
 	Utils.post({route: "/private/tournament/new"
 		    , data: data
@@ -39,14 +47,55 @@ class Create extends Component {
 		   , success: data => {
 		       console.log("Loaded games");
 		       this.setState({_games: data});
-		       this.setState({game: data[0].id});
+		       if(data.length === 0){
+			   this.setState({game: -1});
+		       }
+		       else{
+			   this.setState({game: data[0].id});
+		       }
 		   }
 		   , error: e => {
 		       this.setState({_error: e.responseText});
 		   }
-		  });
-	
-    }	
+		  });	
+    }
+
+    loadTournament = () => {
+	Utils.post({route: "/private/tournament/get/"+this.state.id
+		   , success: data => {
+		       console.log("Loaded this");
+		       
+		       if(data){
+			   data.at = data.at.substring(0, data.at.length-1);
+			   this.setState(data);
+		       }
+		       else{
+			   console.log("Tournament not found");
+		       }
+		   }
+		   , error: e => {
+		       console.log(this.state.id);
+		       console.log(e);
+		   }
+		  });	
+    }
+
+    handleEdit = (_) => {
+	var data = Object.assign({}, this.state);
+	data.at += "Z";
+	data.game = parseInt(data.game, 10);
+	data.reward = parseInt(data.reward, 10);
+	console.log(data);
+	Utils.post({route: "/private/tournament/update/" + this.state.id
+		    , data: data
+		    , success: (_) => {
+			window.location.href = '/';
+		    }
+		    , error: (e) => {
+			this.setState({_error: e.responseText});
+		    }
+		   });
+    }
 
     render() {
 	return (
@@ -84,9 +133,17 @@ class Create extends Component {
 		</textarea>
 		<br/>
 		
-		<input type="button"
+	    {this.props.match.params.id?
+	     <input type="button"
+	    className="btn"
+	    onClick={this.handleEdit}
+	    value="Edit" />
+	     :<input type="button"
+	    className="btn"
 	    onClick={this.handleCreate}
-	    value="Create" />
+	     value="Create" />}
+
+	    
 		
 		<p style={{color: "red"}}>{this.state._error}</p>
 		</div>

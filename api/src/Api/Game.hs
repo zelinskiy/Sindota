@@ -19,15 +19,16 @@ type API =
     :<|> "update"
       :> Capture "id" (Key Game)
       :> ReqBody '[JSON] Game
-      :> Post '[JSON] ()    
+      :> Post '[JSON] ()
     
 server :: PrivateServer API
 server = allGames
-    :<|> newGame
-    :<|> deleteGame
-    :<|> updateGame
+    :<|> enterRole (>= Admin) (
+             newGame
+        :<|> deleteGame
+        :<|> updateGame)
   where    
     allGames = db $ selectList [] []
     newGame = db . insert
     deleteGame = db . delete
-    updateGame tid = db . replace tid
+    updateGame gid = db . replace gid

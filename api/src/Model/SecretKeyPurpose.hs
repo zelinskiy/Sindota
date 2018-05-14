@@ -15,6 +15,7 @@ import Data.DeriveTH
 
 data SecretKeyPurpose
   = SubscribeSilver
+  | PromoteTournament
     deriving (Show, Read, Eq, Generic)
 derivePersistField "SecretKeyPurpose"
 

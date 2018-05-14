@@ -3,21 +3,24 @@
 module Api.Tournament (API, server) where
 
 import Control.Monad.Trans.Reader
-import Data.Maybe
 
+import Data.Maybe
 import Database.Persist.Sqlite
 import Servant
 
 import Model
-import JsonModel
+
 import Utils
 
 type API =
         "all"
-      :> Get '[JSON] [FullTournament]
+      :> Get '[JSON] [Entity Tournament]
     :<|> "new"
       :> ReqBody '[JSON] Tournament
       :> Post '[JSON] (Key Tournament)
+    :<|> "get"
+      :> Capture "id" (Key Tournament)
+      :> Post '[JSON] (Maybe (Entity Tournament))
     :<|> "delete"
       :> Capture "id" (Key Tournament)
       :> Delete '[JSON] ()
@@ -31,35 +34,41 @@ type API =
     :<|> "unregister"
       :> Capture "id" (Key Tournament)
       :> Post '[JSON] ()
+    :<|> "registered"
+      :> Capture "id" (Key Tournament)
+      :> Post '[JSON] Bool
     :<|> "select"
       :> Capture "id" (Key Tournament)
       :> Post '[JSON] ()
     :<|> "my"
-        :>("registered" :> Get '[JSON] [FullTournament]
-      :<|> "created"    :> Get '[JSON] [FullTournament]
-      :<|> "selected"   :> Get '[JSON] (Maybe FullTournament))
+        :>("registered" :> Get '[JSON] [Entity Tournament]
+      :<|> "created"    :> Get '[JSON] [Entity Tournament]
+      :<|> "selected"   :> Get '[JSON] [Entity Tournament])
     :<|> "promote"
+      :> Capture "id" (Key Tournament)
       :> Capture "key" String
       :> Post '[JSON] ()
 
 server :: PrivateServer API
 server = allTournaments
     :<|> newTournament
+    :<|> getTournament
     :<|> deleteTournament
     :<|> updateTournament
     :<|> register
     :<|> unregister
+    :<|> isRegistered
     :<|> selectTournament
     :<|> (myRegistered :<|> myCreated :<|> mySelected)
     :<|> promoteTournament    
   where    
-    allTournaments = db (selectList [] [Asc TournamentAt])
-                     >>= sequence . map fulfillTournament
+    allTournaments = db $ selectList [] [Asc TournamentAt]
     newTournament t = do
       me <- entityKey <$> ask
       let t' = t { tournamentAuthor = me
                  , tournamentStatus = Default }
       db $ insert t'
+    getTournament tid = db $ selectFirst [TournamentId ==. tid] []
     deleteTournament = db . delete
     updateTournament tid t = do
       me <- entityKey <$> ask
@@ -80,6 +89,11 @@ server = allTournaments
       me <- entityKey <$> ask
       db $ delete $ TournamentRegistrationKey me tid
       return ()
+    isRegistered tid = do
+      me <- entityKey <$> ask
+      db $ isJust <$> selectFirst
+        [ TournamentRegistrationUser ==. me
+        , TournamentRegistrationTournament ==. tid] []
     selectTournament tid = do
       me <- entityKey <$> ask
       db $ insert $ TournamentSelection me tid
@@ -89,11 +103,9 @@ server = allTournaments
       myRegs <- db $ map (tournamentRegistrationTournament . entityVal)
                 <$> selectList [TournamentRegistrationUser ==. me] []
       db (selectList [TournamentId <-. myRegs] [Asc TournamentAt])
-        >>= sequence . map fulfillTournament
     myCreated = do
       me <- entityKey <$> ask
       db (selectList [TournamentAuthor ==. me] [Asc TournamentAt])
-        >>= sequence . map fulfillTournament
     mySelected = do
       me <- entityKey <$> ask
       mySelection <- db $ fmap (tournamentSelectionTournament . entityVal)
@@ -101,21 +113,22 @@ server = allTournaments
       case mySelection of
         Just tid -> db (selectFirst [TournamentId ==. tid] [Asc TournamentAt])
           >>= \case
-            Just t -> Just <$> fulfillTournament t
-            Nothing -> return Nothing
-        Nothing -> return Nothing
-    promoteTournament = undefined
-
-    fulfillTournament t = do
-      let tid = entityKey t
-          tv = entityVal t
-      g <- db $ fromMaybe (error "CANT FIND GAME")
-        <$> get (tournamentGame tv)
-      a <- db $ fromMaybe (error "CANT FIND AUTHOR")
-        <$> get (tournamentAuthor tv)
-      cnt <- db $ count [TournamentRegistrationTournament ==. tid]
-      return $ FullTournament 
-        { tournament = tv
-        , game = g
-        , author = a
-        , registeredCount = cnt }
+            Just t -> return [t]
+            Nothing -> return []
+        Nothing -> return []
+    promoteTournament tid k = do
+      mbKey <- db $ selectFirst
+        [ SecretKeyValue ==. k
+        , SecretKeyPurpose ==. PromoteTournament ] []
+      mbTournament <- db $ selectFirst
+        [TournamentId ==. tid] []
+      
+      case (mbKey, mbTournament) of
+        (Nothing, _) -> throwError $ err403
+          { errBody = "Key not Found" }
+        (_, Nothing) ->  throwError $ err403
+          { errBody = "Tournament not Found" }
+        (Just key, Just t) -> db $ do          
+          update (entityKey t) [TournamentStatus =. Promoted]
+          delete (entityKey key)
+          

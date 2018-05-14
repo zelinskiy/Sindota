@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import All from './Tournament/All.jsx';
+import 'bootstrap';
+import strings from './localization';
 
 class Dashboard extends Component{
-        
+    
+    state = {};
+    
     render() {
-	var newLink = <Link to="/tournament/create">new</Link>;
 	return (
 	    <div>
-	      <h2>Dashboard</h2>
-	      <h3>Tournaments ({newLink}):</h3>
-	      <All url="/private/tournament/all"/>
+	      <h2>{strings.Dashboard}</h2>
+	      <All/>
 	    </div>);
     }
 }

@@ -1,8 +1,10 @@
 module Api.Announce (API, server) where
 
---import Control.Monad.Trans.Reader
 import Database.Persist.Sqlite
 import Servant
+import Data.Time.Clock
+import Control.Monad.Trans.Reader
+import Control.Monad.IO.Class
 
 import Model
 import Utils
@@ -27,7 +29,59 @@ server = myAnnounces
     :<|> deleteAnnounce
     :<|> updateAnnounce
   where    
-    myAnnounces = db $ selectList [] []
-    newAnnounce = db . insert
-    deleteAnnounce = db . delete
-    updateAnnounce aid = db . replace aid
+    myAnnounces = do
+      me <- ask
+      myTournaments <- db $ selectList
+          [TournamentRegistrationUser ==. entityKey me] []
+      let myTournamentsIds =
+            map (tournamentRegistrationTournament . entityVal) myTournaments
+      db $ selectList
+        [AnnounceTournament <-. myTournamentsIds]
+        [Desc AnnounceAt]
+    newAnnounce a = do
+      me <- ask
+      now <- liftIO getCurrentTime
+      let a' = a { announceAt = now }
+      mbTournament <- db $ selectFirst
+        [TournamentId ==. announceTournament a] []
+      case mbTournament of
+        Nothing -> throwError $ err403
+          { errBody = "Tournament not Found" }
+        Just t -> if tournamentAuthor (entityVal t) /= entityKey me
+          then throwError $ err403
+               { errBody = "You are not an admin of this tournament" }
+          else db $ insert a'      
+    deleteAnnounce aid = do
+      me <- ask
+      mbAnnounce <- db $ selectFirst
+        [AnnounceId ==. aid] []
+      case mbAnnounce of
+        Nothing -> throwError $ err403
+          { errBody = "Announce not Found" }
+        Just a -> do
+          mbTournament <- db $ selectFirst
+            [TournamentId ==. announceTournament (entityVal a)] []
+          case mbTournament of
+            Nothing -> throwError $ err403
+              { errBody = "Tournament not Found" }
+            Just t -> if tournamentAuthor (entityVal t) /= entityKey me
+              then throwError $ err403
+                   { errBody = "You are not an admin of this tournament" }
+              else db $ delete aid
+    updateAnnounce aid a' = do
+      me <- ask
+      mbAnnounce <- db $ selectFirst
+        [AnnounceId ==. aid] []
+      case mbAnnounce of
+        Nothing -> throwError $ err403
+          { errBody = "Announce not Found" }
+        Just a -> do
+          mbTournament <- db $ selectFirst
+            [TournamentId ==. announceTournament (entityVal a)] []
+          case mbTournament of
+            Nothing -> throwError $ err403
+              { errBody = "Tournament not Found" }
+            Just t -> if tournamentAuthor (entityVal t) /= entityKey me
+              then throwError $ err403
+                   { errBody = "You are not an admin of this tournament" }
+              else db $ replace aid a'

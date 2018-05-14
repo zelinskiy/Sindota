@@ -11,6 +11,10 @@ class Utils {
 	r.type = "GET";
 	this.req(r);
     }
+    static del(r){
+	r.type = "DELETE";
+	this.req(r);
+    }
 
     static req(r){
 	$.ajax({ url: Cookies.get("server") + r.route
@@ -24,11 +28,20 @@ class Utils {
 		 , data: JSON.stringify(r.data)
 		 , success: r.success
 		 , error: r.error
+		 , async: true
 	       });
     }
 
     static sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    static listToDict(xs, ks, vs){
+	var r = {};
+	for(var i = 0; i < xs.length; i++){
+	    r[ks(xs[i])] = vs(xs[i]);
+	}
+	return r;
     }
 }
 

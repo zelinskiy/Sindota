@@ -5,7 +5,7 @@ module JsonModel where
 import GHC.Generics (Generic)
 import Data.Aeson (FromJSON, ToJSON)
 
-import Model
+
 
 data Login = Login
   { email :: String
@@ -23,14 +23,3 @@ data RegisterData = RegisterData
 instance ToJSON RegisterData
 instance FromJSON RegisterData
 
-
-data FullTournament
-  = FullTournament
-    { tournament :: Tournament
-    , game :: Game
-    , author :: User
-    , registeredCount :: Int
-    } deriving (Eq, Show, Generic)
-
-instance ToJSON FullTournament
-instance FromJSON FullTournament

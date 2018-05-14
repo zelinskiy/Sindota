@@ -58,12 +58,13 @@ Game json
 Question json
     user UserId
     tournament TournamentId
-    answered Bool
+    answer String Maybe
     title String
     text String
     deriving Eq Show
 Announce json
     tournament TournamentId
+    at UTCTime
     title String
     text String
     deriving Eq Show

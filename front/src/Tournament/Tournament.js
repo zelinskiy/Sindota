@@ -7,6 +7,9 @@ class Tournament {
        	this.status = "Default";
        	this.game = -1;
        	this.reward = 0 ;
+	this.registeredCount = 0;
+	this.isRegistered = false;
+	this.isAuthor = false;
        	this.description = "Tournament description";
     }
     
@@ -18,6 +21,9 @@ class Tournament {
     game;
     reward;
     description;
+    registeredCount;
+    isRegistered;
+    isAuthor;
 }
 
 export default Tournament;
