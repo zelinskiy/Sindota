@@ -12,6 +12,9 @@ import Data.Text(Text)
 import Network.Wai.Handler.WarpTLS
 import Network.Wai.Middleware.Cors
 
+import qualified Data.ByteString.Char8 as BS
+import Data.Text.Encoding
+
 import qualified Model
 import qualified Api.Auth
 import qualified Api.Main
@@ -41,7 +44,7 @@ app = do
       api = Proxy :: Proxy Api.Main.API
   return $ serveWithContext api ctx (Api.Main.server pool cs jwt)
 
-{-
+
 showLayout :: IO ()
 showLayout = do
   pool <- getConnectionPool
@@ -53,7 +56,7 @@ showLayout = do
             :. cs :. jwt :. EmptyContext
       api = Proxy :: Proxy Api.Main.API
   BS.putStrLn $ encodeUtf8 $ layoutWithContext api ctx
--}
+
 
 startApp :: IO ()
 startApp = runServer . myCors =<< app
