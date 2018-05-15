@@ -88,10 +88,12 @@
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
+#include <EEPROM.h> 
+#include <Time.h> 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
-//echo -e -n "This is a rather\nlong long line \a" > /dev/ttyUSB0
+//echo -e -n "N$(date +%s -d "+ 0 hour")" > /dev/ttyUSB0
 
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
@@ -100,6 +102,8 @@ int muteButtonPin = 3;
 int backlightButtonPin = 4;
 int refreshButtonPin = 5;
 int secretButtonPin = 6;
+int updateLed = 7;
+int soundLed = 8;
 int potentiometer = A0;
 int soundSensor = A1;
 
@@ -107,6 +111,8 @@ boolean isMuted = false;
 boolean isBacklightOn = true;
 int storedNoizeLevel = 0;
 int noizeLevel = 250;
+
+time_t tournament;
 
 void setup()
 {
@@ -119,13 +125,18 @@ void setup()
   pinMode(secretButtonPin, INPUT);
   digitalWrite(secretButtonPin, HIGH);
   pinMode(soundPin, OUTPUT);
+  pinMode(updateLed, OUTPUT);
+  pinMode(soundLed, OUTPUT);
   lcd.begin();
   lcd.backlight();
   Serial.begin(9600);
+  randomSeed(analogRead(0));
+  load();
 }
 
 void loop()
 {
+  delay(100);
   
   noizeLevel = analogRead(potentiometer);
   int s = analogRead(soundSensor);
@@ -148,37 +159,88 @@ void loop()
     delay(100);
   }
   if(digitalRead(refreshButtonPin) == LOW){
+    lcd.clear();
+    lcd.print("Loading...");
     Serial.write("UPD");
-    delay(100);
+    wait(1000);
+    lcd.clear();
   }
   if(digitalRead(secretButtonPin) == LOW){
     gf();
   }
-  
-  lcd.setCursor(14,1);
-  if(isMuted){
-    lcd.print("MU");
-  } else {
-    lcd.print("  ");
-  }
-  lcd.setCursor(0,0);
-  
   if (Serial.available()) {
-    delay(100);
     lcd.clear();
-    while (Serial.available()) {
-      char c = Serial.read();
-      if(c == '\n') lcd.setCursor(0,1);
-      else if(c == '\a') pik();
-      else if(c == '\f') gf();
-      else lcd.write(c);
-    }
+    lcd.print("Loading...");
+    switch(Serial.read()){
+      case 'N':
+        setTime(Serial.parseInt());
+        break;
+      case 'T':
+        tournament = Serial.parseInt();
+        save();
+        break;
+      default:
+        break;
+    }    
+    lcd.clear();
   }
+  time_t t = now();
+  time_t delta = abs(tournament - t);
+  lcd.clear();
+  lcd.print(String(day(t)) + "." + String(month(t)) + "   " 
+          + String(hour(t)) + ":" + String(minute(t)) + ":" + String(second(t)));
+  lcd.setCursor(0,1);  
+  lcd.print(String(delta/86400) + "d " 
+          + String(hour(delta)) + ":" + String(minute(delta)) + ":" + String(second(delta)));
+  
+  if(isMuted){
+    digitalWrite(soundLed, LOW);
+  } else {
+    digitalWrite(soundLed, HIGH);
+  }
+  
+  if (abs(
+          
+}
+
+void save(){
+  //EEPROM.write(0,tournament);
+  
+  EEPROM.write(0, hour(tournament));
+  EEPROM.write(1, minute(tournament));
+  EEPROM.write(2, second(tournament));
+  EEPROM.write(3, day(tournament));
+  EEPROM.write(4, month(tournament));
+  EEPROM.write(5, year(tournament) % 100);
   
 }
+
+void load(){
+  //tournament = EEPROM.read(0);
   
+  int h = EEPROM.read(0);
+  int m = EEPROM.read(1);
+  int s = EEPROM.read(2);
+  int d = EEPROM.read(3);
+  int mn = EEPROM.read(4);
+  int y = EEPROM.read(5) + 2000;
+  // begin костыль
+  time_t t0 = now();
+  setTime(h,m,s,d,mn,y);
+  tournament = now();
+  setTime(t0);
+  // end костыль
+  //tournament = h * 3600 + m * 60 + s + d * 86400 + mn * 2628000 + y * 31536000;
+  
+}
+
 void pik(){
-    if (isMuted) {return;}
+  if(isMuted) return;
+  tone(soundPin, 1000, 500);
+}
+  
+void piiik(){    
+    if (isMuted) {return;}    
     int melody[] = { NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4 };
   
     int noteDurations[] = { 4, 8, 8, 4, 4, 4, 4, 4 };
@@ -192,6 +254,15 @@ void pik(){
     }
 }
 
+void wait(int ms){
+  int n = 10;
+  for(int i = 0; i < n; i ++){
+    digitalWrite(updateLed, HIGH);
+    delay(ms / (2 * n));
+    digitalWrite(updateLed, LOW);
+    delay(ms / (2 * n) );
+  }
+}
 
 void gf(){
   if (isMuted) return;
@@ -239,6 +310,11 @@ void gf(){
   };
 
   int lengthOfMelody = sizeof(melody)/sizeof(melody[0]);
+  
+  lcd.clear();
+  lcd.print(" Nunquam sapiunt ");
+  lcd.setCursor(0,1);
+  lcd.print("   omnia quae    ");
   
   for (int thisNote = 0; thisNote < lengthOfMelody; thisNote++) {    
       int noteDuration = 1000 / noteDurations[thisNote];

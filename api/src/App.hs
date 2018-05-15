@@ -62,7 +62,7 @@ startApp :: IO ()
 startApp = runServer . myCors =<< app
   where
     runServer = runTLS
-      (tlsSettings "server.crt" "server.key")
+      (tlsSettings "../cert/server.crt" "../cert/server.key")
       (setPort port defaultSettings)
     myCors = cors (const $ Just policy)
     policy = CorsResourcePolicy
