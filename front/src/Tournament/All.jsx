@@ -38,7 +38,8 @@ class All extends Component {
     }
     
     renderTournament = t => {
-	return(<tr>
+        var at = new Date(t.at);
+	return(<tr style={{color: at<Date.now()?"red":"black"}}>
 	       <th><a href={"/tournament/details/"+t.id}>{t.title}</a></th>
 	       <th>{this.state.games[t.game].name}</th>
 	       <th>{(new Date(t.at)).toLocaleString("ru")}</th>
