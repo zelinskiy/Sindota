@@ -92,10 +92,12 @@
 #include <Time.h> 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
+#include <iarduino_RTC.h> 
 
-//echo -e -n "N$(date +%s -d "+ 0 hour")" > /dev/ttyUSB0
+//echo -e -n "N$(date +%s)" > /dev/ttyUSB0
 
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
+iarduino_RTC rtc(RTC_DS1302,9,10,11);
 
 int soundPin = 2;
 int muteButtonPin = 3;
@@ -132,12 +134,15 @@ void setup()
   Serial.begin(9600);
   randomSeed(analogRead(0));
   load();
+  rtc.begin();
+  rtc.gettime("");
+  setTime(rtc.Hours,rtc.minutes,rtc.seconds,rtc.day, rtc.month, rtc.year);
 }
 
 void loop()
 {
   delay(100);
-  
+  time_t t = now();
   noizeLevel = analogRead(potentiometer);
   int s = analogRead(soundSensor);
   int delta_s = abs(storedNoizeLevel - s);
@@ -173,7 +178,9 @@ void loop()
     lcd.print("Loading...");
     switch(Serial.read()){
       case 'N':
-        setTime(Serial.parseInt());
+        t = Serial.parseInt();
+        setTime(t);
+        rtc.settime(second(t),minute(t), hour(t), day(t), month(t), year(t), weekday(t));
         break;
       case 'T':
         tournament = Serial.parseInt();
@@ -184,14 +191,30 @@ void loop()
     }    
     lcd.clear();
   }
-  time_t t = now();
-  time_t delta = abs(tournament - t);
-  lcd.clear();
-  lcd.print(String(day(t)) + "." + String(month(t)) + "   " 
-          + String(hour(t)) + ":" + String(minute(t)) + ":" + String(second(t)));
-  lcd.setCursor(0,1);  
-  lcd.print(String(delta/86400) + "d " 
-          + String(hour(delta)) + ":" + String(minute(delta)) + ":" + String(second(delta)));
+  
+  long delta = tournament - t;
+  if (delta == 0){
+    while(digitalRead(muteButtonPin) != LOW) {
+      lcd.backlight();
+      lcd.clear();
+      lcd.print("  TOURNAMENT   ");
+      lcd.setCursor(0,1);  
+      lcd.print("    BEGIN!     ");
+      piiik();
+      wait(1000);
+    }    
+  } else {
+    lcd.clear();
+    lcd.print(String(day(t)) + "." + String(month(t)) + "   " 
+            + String(hour(t)) + ":" + String(minute(t)) + ":" + String(second(t)));
+    lcd.setCursor(0,1);  
+    if(delta < 0){
+      lcd.print("Tournam. active!");
+    } else {
+      lcd.print(String(delta/86400) + "d " 
+              + String(hour(delta)) + ":" + String(minute(delta)) + ":" + String(second(delta)));
+    }
+  }
   
   if(isMuted){
     digitalWrite(soundLed, LOW);
@@ -199,13 +222,10 @@ void loop()
     digitalWrite(soundLed, HIGH);
   }
   
-  if (abs(
           
 }
 
 void save(){
-  //EEPROM.write(0,tournament);
-  
   EEPROM.write(0, hour(tournament));
   EEPROM.write(1, minute(tournament));
   EEPROM.write(2, second(tournament));
