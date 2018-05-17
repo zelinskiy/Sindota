@@ -76,7 +76,7 @@ server = allTournaments
                  , tournamentStatus = Default }
       db $ insert t'
     getTournament tid = db $ selectFirst [TournamentId ==. tid] []
-    deleteTournament = db . delete
+    deleteTournament = db . deleteCascade
     updateTournament tid t = do
       me <- entityKey <$> ask
       mbTournament <- db $ selectFirst [TournamentId ==. tid] []

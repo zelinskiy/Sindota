@@ -84,4 +84,4 @@ server = askedQuestions
                && questionUser (entityVal q) /= entityKey me)
           then throwError $ err403
             { errBody = "You are not allowed to delete" }
-          else db $ delete qid 
+          else db $ deleteCascade qid 

@@ -72,7 +72,7 @@ server = myAnnounces
             Just t -> if tournamentAuthor (entityVal t) /= entityKey me
               then throwError $ err403
                    { errBody = "You are not an admin of this tournament" }
-              else db $ delete aid
+              else db $ deleteCascade aid
     updateAnnounce aid a' = do
       me <- ask
       mbAnnounce <- db $ selectFirst

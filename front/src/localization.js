@@ -51,7 +51,9 @@ let strings = new LocalizedStrings({
 	NoRegisteredUsers: "No registered users",
 	Pending: "Pending",
 	Asked: "Asked",
-	NotAnsweredYet: "Ще немає відповіді"
+	NotAnsweredYet: "Ще немає відповіді",
+	asking: "asking",
+	Answer: "Answer"
     },
     ru: {
 	lang:"Язык",
@@ -102,7 +104,9 @@ let strings = new LocalizedStrings({
 	NoRegisteredUsers: "Никто не зарегистрировался",
 	Pending: "Ожидающие ответа",
 	Asked: "Спрошенные",
-	NotAnsweredYet: "Ще немає відповіді"
+	NotAnsweredYet: "Ще немає відповіді",
+	asking: "вопрошает",
+	Answer: "Ответ"
     },
     uk: {
 	lang:"Мова",
@@ -153,7 +157,9 @@ let strings = new LocalizedStrings({
 	NoRegisteredUsers: "Зареєстрованих немає",
 	Pending: "Очікуючі",
 	Asked: "Спитані",
-	NotAnsweredYet: "Ще немає відповіді"
+	NotAnsweredYet: "Ще немає відповіді",
+	asking: "питає",
+	Answer: "Відповідь"
     }
 });
 

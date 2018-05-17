@@ -61,7 +61,10 @@ class All extends Component {
     
     render() {
 	return (
-	    <div style={{margin:"30px"}}>
+	    <div style={{margin:"30px",
+			 height:"100%",
+			 overflow:"auto"
+		 }}>
 	      <h4>
 		<a href="/tournament/all">
 		  {strings.Tournaments}

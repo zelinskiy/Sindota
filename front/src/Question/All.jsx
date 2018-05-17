@@ -36,8 +36,10 @@ class All extends Component {
     handleDelete = qid => {
 	Utils.del({route: "/private/question/delete/" + qid
 		    , success: (data) => {
-			this.setState({asked: this.state.asked.filter(q => q.id !== qid)});
-			this.setState({pending: this.state.pending.filter(q => q.id !== qid)});
+			this.setState({asked: this.state.asked
+				       .filter(q => q.id !== qid)});
+			this.setState({pending: this.state.pending
+				       .filter(q => q.id !== qid)});
 		    }
 		    , error: (e) => {
 			this.setState({_error: e.responseText});
@@ -63,9 +65,11 @@ class All extends Component {
 	if (e.keyCode !== 13) {	    
 	    return;
 	}
-	Utils.post({route: "/private/question/respond/" + q.id + "/" + q.answer
+	Utils.post({route: "/private/question/respond/" + q.id
+		    + "/" + q.answer
 		    , success: (data) => {
-			this.setState({pending: this.state.pending.filter(p => p.id !== q.id)});
+			this.setState({pending: this.state.pending
+				       .filter(p => p.id !== q.id)});
 		    }
 		    , error: (e) => {
 			this.setState({_error: e.responseText});
@@ -79,7 +83,8 @@ class All extends Component {
 		<input
 		type="text"
 		className="form-control"
-		value={this.state.pending.find(p => p.id === q.id).answer}
+		value={this.state.pending
+		       .find(p => p.id === q.id).answer}
 		onChange={this.handleAnswerChange(q)}
 		onKeyDown={this.handleAnswer(q)}/>
 		<hr/>
@@ -90,34 +95,48 @@ class All extends Component {
 
     renderAsked = q => <div><p>
 	<b>{q.title}</b>
-	&nbsp;<button className="btn btn-outline-danger" onClick={e => this.handleDelete(q.id)}>x</button>
-	&nbsp;<button className="btn btn-outline-primary" onClick={e => window.location.href="/tournament/detail/"+q.tournament}>{strings.Tournament}</button>
-	<br/>
-	{q.text}<span><br/>{q.answer?q.answer:strings.NotAnsweredYet}</span>
-    </p>
-    </div>
+	<br/>{q.user} {strings.asking}
+	<br/>{q.text}
+	<br/><b>{strings.Answer}</b>:
+	<br/>{q.answer?q.answer:strings.NotAnsweredYet}
+    <br/><button
+    className="btn btn-outline-danger"
+    onClick={e => this.handleDelete(q.id)}>x</button>
+	&nbsp;<button
+    className="btn btn-outline-primary"
+    onClick={e => window.location.href="/tournament/details/"+q.tournament}>
+	{strings.Tournament}
+    </button>
+	</p>
+	</div>
 
-render() {
-    return (<div style={{margin:"30px"}}>
-	    <h4><a href="/wuestions">{strings.Questions}</a></h4>
-	    <p>{this.state._error}</p>
-	    <div className="row">
-	    	    
-	    <div className="col-md-6">
-	    
-	    <h4>{strings.Pending} ({this.state.pending.length}):</h4>
-	    {this.state.pending.map(this.renderPending)}
-	    </div>
-	    
-	    <div className="col-md-6">
-	    <h4>{strings.Asked} ({this.state.asked.length}):</h4>
-	    {this.state.asked.map(this.renderAsked)}	    
-	    </div>
-	    
-	    </div>
-	    </div>
-	   );
-}
+    render() {
+	return (<div style={{margin:"30px",
+			     overflow:"auto",
+			     "overflow-x": "hidden",
+			     height:"100%"}}>
+		<h4><a href="/questions">{strings.Questions}</a></h4>
+		<p>{this.state._error}</p>
+		<div className="row">
+	    	
+		<div className="col-md-6">
+		
+		<h4>
+		{strings.Pending}
+		({this.state.pending.length}):
+		</h4>
+		{this.state.pending.map(this.renderPending)}
+		</div>
+		
+		<div className="col-md-6">
+		<h4>{strings.Asked} ({this.state.asked.length}):</h4>
+		{this.state.asked.map(q => <div>{this.renderAsked(q)}<hr/></div>)}	    
+		</div>
+		
+		</div>
+		</div>
+	       );
+    }
 }
 
 export default All;

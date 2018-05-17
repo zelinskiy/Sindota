@@ -186,7 +186,7 @@ class Details extends Component{
 
     render() {
 	return (
-	    <div>
+	    <div style={{margin:"30px"}}>
               <h4>{this.state.title}</h4>
 	      <p>
 		&nbsp;<button
@@ -265,7 +265,7 @@ class Details extends Component{
 			      +
 			    </a>
 	      </p>
-
+	      <hr/>
 	      
 	      <p>{strings.Status}:
 		{this.state.status}</p>
@@ -278,7 +278,7 @@ class Details extends Component{
 	      <p>{strings.Reward}:
 		{this.state.reward}</p>
 	      <p>{this.state.description}</p>
-	      <br/>
+	      <hr/>
 	      <h5>{strings.RegisteredUsers} ({this.state.members?this.state.members.length:0}):</h5>
 	      {this.state.members?this.state.members.map(m => <p>{m}</p>):<p>{strings.NoRegisteredUsers}</p>}
 	      

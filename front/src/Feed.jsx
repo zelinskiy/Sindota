@@ -38,25 +38,34 @@ class Feed extends Component {
     }
 
     renderAnnounce = a => <div className="well" >
-	<h6>
+	<p>
 	<a href={"/announce/edit/" + a.id}>
 	{a.title}
-    </a>
-	&nbsp;
+    </a>	
+	</p>
+	<p>{strings.At}: {Utils.formatTime(a.at)}
+	<br/>
+	{strings.Text}: {a.text}
+	<br/>
 	<button
     className="btn btn-outline-danger"
     onClick={e => this.deleteAnnounce(a.id)}>
-	x</button>
-	</h6>
-	<p>{strings.At}: {Utils.formatTime(a.at)}
-	<br/>
-	{strings.Text}: {a.text}</p>
+	x</button>&nbsp;
+	<button
+    className="btn btn-outline-primary"
+    onClick={e => window.location.href="/tournament/details/"+a.tournament}>
+	{strings.Tournament}
+    </button>
+	</p>
+	<hr/>
 	</div>
 
     render = () => 
-	<div style={{margin:"30px", height:"600px", overflow:"scroll", "overflow-x": "hidden"}}>
+	<div style={{margin:"30px",
+		     overflow:"auto",
+		     "overflow-x": "hidden",
+		     height:"100%"}}>
 	<h4><a href="/feed">{strings.Feed}</a></h4>
-	<hr/>
 	{this.state.announces.map(this.renderAnnounce)}
 	</div>
 	

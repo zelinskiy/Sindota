@@ -61,13 +61,13 @@ const Main = () => (
 );
 
 const Header = () => (
-    <header>
+    <header style={{margin:"10px"}}>
       <nav>
-        <Link to='/'>{strings.Home}</Link> &nbsp;
-	<Link to='/tournament/all'>{strings.Tournaments}</Link> &nbsp;
-	<Link to='/questions'>{strings.Questions}</Link> &nbsp;
-	<Link to='/feed'>{strings.Feed}</Link> &nbsp;
-        <Link to='/auth'>{strings.Auth}</Link> &nbsp;
+        <Link to='/'>{strings.Home}</Link> &nbsp;&nbsp;&nbsp;
+	<Link to='/tournament/all'>{strings.Tournaments}</Link> &nbsp;&nbsp;&nbsp;
+	<Link to='/questions'>{strings.Questions}</Link> &nbsp;&nbsp;&nbsp;
+	<Link to='/feed'>{strings.Feed}</Link> &nbsp;&nbsp;&nbsp;
+        <Link to='/auth'>{strings.Auth}</Link> &nbsp;&nbsp;&nbsp;
 	<select id="langSelect"
 		onClick={(e)=>{
 		    Cookies.set("lang", e.target.value);
