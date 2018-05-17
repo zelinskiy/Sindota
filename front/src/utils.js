@@ -47,6 +47,10 @@ class Utils {
     static formatTime(s){
 	return new Date(s).toLocaleString("ru");
     }
+
+    static myEmail(){
+	return JSON.parse(Cookies.get("me")).email;
+    }
 }
 
 export default Utils;

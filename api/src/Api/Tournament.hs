@@ -50,6 +50,9 @@ type API =
       :> Capture "id" (Key Tournament)
       :> Capture "key" String
       :> Post '[JSON] ()
+    :<|> "members"
+      :> Capture "id" (Key Tournament)
+      :> Get '[JSON] [Key User]
 
 server :: PrivateServer API
 server = allTournaments
@@ -63,7 +66,8 @@ server = allTournaments
     :<|> selectTournament
     :<|> unselectTournament
     :<|> (myRegistered :<|> myCreated :<|> mySelected)
-    :<|> promoteTournament    
+    :<|> promoteTournament
+    :<|> getMembers
   where    
     allTournaments = db $ selectList [] [Asc TournamentAt]
     newTournament t = do
@@ -139,4 +143,7 @@ server = allTournaments
         (Just key, Just t) -> db $ do          
           update (entityKey t) [TournamentStatus =. Promoted]
           delete (entityKey key)
+    getMembers tid =
+      db $ map (tournamentRegistrationUser . entityVal)
+        <$> selectList [TournamentRegistrationTournament ==. tid] []
           

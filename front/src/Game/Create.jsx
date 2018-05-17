@@ -26,12 +26,12 @@ class Create extends Component {
     render() {
 	return (
 	    <div>
-              Name:
+              {strings.Title}:
               <input type="text"
 		     value={this.state.name}
 		     onChange={e=>this.setState({name:e.target.value})}/>
 		<br/>		
-		Description:
+		{strings.Description}:
 		<input type="text"
 		       value={this.state.description}
 		       onChange={e=>this.setState({description:e.target.value})} />
@@ -40,7 +40,7 @@ class Create extends Component {
 		<input type="button"
 		       className="btn"
 		       onClick={this.handleCreate}
-		       value="Create" />
+		       value={strings.Create} />
 				
 		<p style={{color: "red"}}>{this.state._error}</p>
 	    </div>

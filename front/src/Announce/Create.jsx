@@ -56,30 +56,38 @@ class Create extends Component {
 
     render() {
 	return (
-	    <div>
-              Title:
-              <input type="text"
-		     value={this.state.title}
-		     onChange={e=>this.setState({title:e.target.value})}/>
-		<br/>		
-		Text:
-		<input type="text"
-		       value={this.state.text}
-		       onChange={e=>this.setState({text:e.target.value})} />
+	    <div className="row">
+		<div className="col-md-1"></div>
+		<div className="col-md-4">
 		<br/>
+              {strings.Title}:
+		<input
+		  type="text"
+		  className="form-control"
+		  value={this.state.title}
+		  onChange={e=>this.setState({title:e.target.value})}/>
+		  <br/>		
+		  {strings.Text}:<br/>
+		  <textarea
+		    rows="5" cols="30"
+		    className="form-control"
+		    value={this.state.text}
+		    onChange={e=>this.setState({text:e.target.value})}>
+		  </textarea>
+		  <br/>
 
-		{this.props.match.params.mode === "create"?
-		    <input type="button"
-			       className="btn"
-			       onClick={this.handleCreate}
-			       value="Create" />
+		    {this.props.match.params.mode === "create"?
+			<input type="button"
+				   className="btn"
+				   onClick={this.handleCreate}
+			       value={strings.Create} />
 			:<input type="button"
 				    className="btn"
 				    onClick={this.handleEdit}
-				value="Edit" />}
+				value={strings.Edit} />}
 				
 		<p style={{color: "red"}}>{this.state._error}</p>
-	    </div>
+	    </div></div>
 	);
     }
 }

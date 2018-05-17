@@ -99,35 +99,46 @@ class Create extends Component {
 
     render() {
 	return (
-	    <div>
+	    <div className="row">
+	      <div className="col-md-1"></div>
+	      <div className="col-md-6">
+		<br/>
+		<h4>{strings.Tournament}</h4>
               {strings.Title}:
               <input type="text"
+		     className="form-control"
 		     value={this.state.title}
 		     onChange={e=>this.setState({title:e.target.value})}/>
 		<br/>
 		
 		{strings.At}:
 		<input type="datetime-local"
+		       className="form-control"
 		       value={this.state.at}
 		       onChange={e=>this.setState({at:e.target.value})} />
 		  <br/>
 		  
 		  {strings.Game}:
-		  <select value={this.state.game} onChange={e=>this.setState({game:e.target.value})}>
+		  <select
+		    className="form-control"
+		    value={this.state.game}
+		    onChange={e=>this.setState({game:e.target.value})}>
 		    {this.state._games.map(g => <option value={g.id} key={g.id}>{g.name}</option>)}
 	    </select>
 		&nbsp;<a href="/game/new">{strings.New}</a>
 		<br/>
 		
 	    {strings.Reward}:
-		<input type="number"
+		<input
+	    className="form-control"
+	    type="number"
 	    value={this.state.reward}
 	    min="0"
 	    onChange={e=>this.setState({reward:e.target.value})} />
 		<br/>
 		
 	    {strings.Description}: <br/>
-		<textarea rows="5" cols="30"
+		<textarea rows="5" cols="30" className="form-control"
 	    value={this.state.description}
 	    onChange={e=>this.setState({description:e.target.value})}>
 		</textarea>
@@ -146,7 +157,7 @@ class Create extends Component {
 	    
 		
 		<p style={{color: "red"}}>{this.state._error}</p>
-		</div>
+		</div></div>
 	);
     }
 }

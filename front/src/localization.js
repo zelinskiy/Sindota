@@ -6,6 +6,7 @@ let strings = new LocalizedStrings({
 	
 	Home:"Home",
 	Tournaments:"Tournaments",
+	Tournament:"Tournament",
 	Games:"Games",
 	Feed:"Feed",
 	Auth:"Auth",
@@ -41,13 +42,22 @@ let strings = new LocalizedStrings({
 	Author: "Author",
 	Text: "Text",
 	SelectedTournament: "Selected tournament",
-	NotSelectedTournament: "No tournament selected"
-	
+	NotSelectedTournament: "No tournament selected",
+
+	Question: "Question",
+	Questions: "Questions",
+	Save: "Save",
+	RegisteredUsers: "Registered users",
+	NoRegisteredUsers: "No registered users",
+	Pending: "Pending",
+	Asked: "Asked",
+	NotAnsweredYet: "Ще немає відповіді"
     },
     ru: {
 	lang:"Язык",
 	Home:"Главная",
 	Tournaments:"Турниры",
+	Tournament:"Турнир",
 	Games:"Игры",
 	Feed:"Лента",
 	Auth:"Авторизация",
@@ -83,12 +93,22 @@ let strings = new LocalizedStrings({
 	Author: "Автор",
 	Text: "Текст",
 	SelectedTournament: "Выбран турнир",
-	NotSelectedTournament: "Нет выбранного турнира"
+	NotSelectedTournament: "Нет выбранного турнира",
+
+	Question: "Вопрос",
+	Questions: "Вопросы",
+	Save: "Сохранить",
+	RegisteredUsers: "Зарегистрированные пользователи",
+	NoRegisteredUsers: "Никто не зарегистрировался",
+	Pending: "Ожидающие ответа",
+	Asked: "Спрошенные",
+	NotAnsweredYet: "Ще немає відповіді"
     },
     uk: {
 	lang:"Мова",
 	Home:"Головна",
 	Tournaments:"Турнiри",
+	Tournament:"Турнiр",
 	Games:"Iгри",
 	Feed:"Лента",
 	Auth:"Авторизацiя",
@@ -123,8 +143,17 @@ let strings = new LocalizedStrings({
 	Announce: "Оголошення",
 	Author: "Автор",
 	Text: "Текст",
-	SelectedTournament: "Обраний турнiр",
-	NotSelectedTournament: "Немає обраного турнiру"
+	SelectedTournament: "Обрано турнiр",
+	NotSelectedTournament: "Немає обраного турнiру",
+
+	Question: "Питання",
+	Questions: "Питання",
+	Save: "Зберегти",
+	RegisteredUsers: "Зареєстровані користувачі",
+	NoRegisteredUsers: "Зареєстрованих немає",
+	Pending: "Очікуючі",
+	Asked: "Спитані",
+	NotAnsweredYet: "Ще немає відповіді"
     }
 });
 

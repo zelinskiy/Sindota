@@ -30,11 +30,14 @@ class Dashboard extends Component{
     render() {
 	return (
 	    <div>
-	      <h2>{strings.Dashboard}</h2>
-	      <p>{this.state.selected?
-		    <a href={"/tournament/details/"+this.state.selected.id}>{strings.SelectedTournament} "{this.state.selected.title}" ({new Date(this.state.selected.at).toLocaleString("ru")})</a>
-			:<span>{strings.NotSelectedTournament}</span>}
-	      </p>
+	      <div style={{'margin-left':"30px", 'margin-top':"30px"}}>
+		<h2>{strings.Dashboard}</h2>
+		<p>{this.state.selected?
+		      <a href={"/tournament/details/"+this.state.selected.id}>{strings.SelectedTournament} "{this.state.selected.title}" ({new Date(this.state.selected.at).toLocaleString("ru")})</a>
+		      :<span>{strings.NotSelectedTournament}</span>}
+		</p>
+	      </div>
+	      
 
 	      <table>
 		<tr>

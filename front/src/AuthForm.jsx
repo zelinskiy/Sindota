@@ -114,49 +114,68 @@ class AuthForm extends Component {
 	else{
 	    var me = JSON.parse(Cookies.get("me")); 
 	    return (<div>
-		    <p>{strings.Hello}, {me.email}!</p>
-		    <p>{strings.Status}: {me.status}</p>
+		    <p>{strings.Hello}, {me.email}!<br/>
+		    {strings.Status}: {me.status}</p>
 		    </div>);
 	}
     }
 
     render() {
-	return (<div>{Cookies.get("jwt") === undefined?
-		      <div>
-		      {strings.Login}:
-		      <input type="text"
-		      value={this.state.login}
-		      onChange={this.handleChangeLogin} />
-		      <br/>
-		      {strings.Password}:
-		      <input type="password"
-		      value={this.state.pass}
-		      onChange={this.handleChangePass} />
-		      <br/>
-		      <input type="button"
-		      onClick={this.handleLogin}
-		      value={strings.Login} />
-		      <input type="button"
-		      onClick={this.handleRegister}
-		      value={strings.Register} />
-		      
-		      </div>:
-		      <div>
-		      {this.renderMe()}
-		      <input type="button"
-		      onClick={this.handleLogout}
-		      value={strings.Logout} />
-		      <input type="button"
-		      onClick={this.handleUnregister}
-		      value={strings.DeleteAccount} />
-		      <input type="button"
-		      onClick={this.seizeTheMeans}
-		      value="★" />
-		      <input type="button"
-		      onClick={this.generateKey}
-		      value="k" />
-		      </div>}
+	return (<div style={{margin: "30px"}}>
+		<div className="row" >
+		<div className="col-md-6">
+		<h4><a href="/auth">{strings.Auth}</a></h4>
+		<br/>
+		{Cookies.get("jwt") === undefined?
+		 <div>
+		 {strings.Login}:
+		 <input type="text"
+		 className="form-control"
+		 value={this.state.login}
+		 onChange={this.handleChangeLogin} />
+		 <br/>
+		 {strings.Password}:
+		 <input type="password"
+		 className="form-control"
+		 value={this.state.pass}
+		 onChange={this.handleChangePass} />
+		 <br/><br/>
+		 &nbsp;&nbsp;&nbsp;
+		 <input type="button"
+		 className="btn btn-outline-success"
+		 onClick={this.handleLogin}
+		 value={strings.Login} />
+		 &nbsp;&nbsp;&nbsp;
+		 <input type="button"
+		 className="btn btn-outline-success"
+		 onClick={this.handleRegister}
+		 value={strings.Register} />		 
+		 </div>:
+		 <div>
+		 {this.renderMe()}
+		 <input type="button"
+		 className="btn btn-outline-info"
+		 onClick={this.handleLogout}
+		 value={strings.Logout} />
+		 &nbsp;&nbsp;
+		 <input type="button"
+		 className="btn btn-outline-danger"
+		 onClick={this.handleUnregister}
+		 value={strings.DeleteAccount} />
+		 <br/><br/>
+		 <input type="button"
+		 className="btn btn-outline-warning"
+		 onClick={this.seizeTheMeans}
+		 value="★" />
+		 &nbsp;&nbsp;
+		 <input type="button"
+		 className="btn btn-outline-warning"
+		 onClick={this.generateKey}
+		 value="k" />
+		 </div>}
 		<p style={{color: "red"}}>{this.state.error}</p> 
+		</div>
+		</div>
 		</div>
 	       );
     }
